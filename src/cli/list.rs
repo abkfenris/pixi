@@ -298,6 +298,17 @@ fn create_package_to_output<'a, 'b>(
         Package::Pypi(p) => {
             let package_data = p.data().package;
             registry_index.as_mut().and_then(|registry| {
+                if let Some(path) = package_data.url_or_path.as_path() {
+                    return Some(format!(
+                        "{}-> {}",
+                        if package_data.editable {
+                            "Editable "
+                        } else {
+                            ""
+                        },
+                        path.display()
+                    ));
+                }
                 let version = registry.get_version(&package_data.name, &package_data.version)?;
                 Some(version.filename.to_string())
             })
